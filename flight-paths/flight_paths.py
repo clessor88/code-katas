@@ -1,3 +1,6 @@
+from graph import SimpleGraph
+
+
 def calculate_distance(point1, point2):
     """
     Calculate the distance (in miles) between point1 and point2.
@@ -20,3 +23,21 @@ def calculate_distance(point1, point2):
     a = math.sin(0.5 * delta_phi)**2 + math.cos(phi1) * math.cos(phi2) * math.sin(0.5 * delta_lam)**2
     c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
     return radius_earth * c / 1.60934  # convert km to miles
+
+
+def import_airports(json):
+    airports = {}
+    for data in json:
+        airports[data['city']] = data['lat_lon']
+    return airports
+
+
+def graph_airports(json, airports):
+    graph = SimpleGraph()
+    for data in json:
+        for d in data['destination_cities']:
+            pointA = airports[data['city']]
+            pointB = airports[d]
+            distance = calculate_distance(pointA, pointB)
+            graph.add_edge(data['city'], d, distance)
+    return graph

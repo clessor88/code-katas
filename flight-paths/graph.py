@@ -98,3 +98,34 @@ class SimpleGraph(object):
                 if self._graph[added]:
                     to_visit.extend(self._graph[added])
         return result
+
+    def shortest_path(self, start, end):
+        """Dijkstra's algorithm. My partner and I didn't finish this part and
+        I am temporarily borrowing this code from justin (welliam).
+        """
+        distance_from_start = {start: 0}
+        unvisited = set(self.nodes())
+        parents = {}
+
+        while end in unvisited:
+            current = min((weight, node)
+                          for node, weight
+                          in distance_from_start.items()
+                          if node in unvisited)[1]
+            for neighbor in self.neighbors(current):
+                weight = self._nodes[current][neighbor] + distance_from_start[current]
+                dist = distance_from_start.setdefault(neighbor, weight)
+                if weight <= dist:
+                    distance_from_start[neighbor] = weight
+                    parents[neighbor] = current
+            unvisited.remove(current)
+
+        s = []
+        weight = 0
+        current = end
+        while current in parents:
+            s.append(current)
+            weight += self._nodes[parents[current]][current]
+            current = parents[current]
+        s.append(start)
+        return s[::-1], weight
